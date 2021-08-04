@@ -1,21 +1,21 @@
 import SwiftShell
 import ArgumentParser
 
-/// USAGE: SubmitCode [--is-submit] [--rb-id <rb-id>]
+/// USAGE: SubmitCode [--submit] [--id <id>]
 struct SubmitCode: ParsableCommand {
-    @Flag(help: "Flag whether it is a submit flow")
-    var isSubmit = false
+    @Flag(help: "Flag whether to submit code")
+    var submit = false
 
-    @Option(help: "Review bord id")
-    var rbID: String?
+    @Option(help: "Review Board ID")
+    var id: String?
 
     func run() throws {
         Git.gitPull()
-        if isSubmit {
-            Git.gitReview(rbID)
+        if submit {
+            Git.gitReview(id)
             Git.gitSubmit()
         } else {
-            Rbt.rbtPost(rbID)
+            Rbt.rbtPost(id)
         }
     }
 }
