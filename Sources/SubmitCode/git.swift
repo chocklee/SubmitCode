@@ -16,10 +16,7 @@ struct Git {
         print(gitPullRunOutput.stdout)
     }
 
-    static func gitReview(_ rbID: String?) {
-        guard let rbID = rbID else {
-            exit(errormessage: "Missing rb id")
-        }
+    static func gitReview(_ rbID: String) {
         let gitReviewRunOutput = run(bash: "git review dcommit -r \(rbID)")
         guard gitReviewRunOutput.succeeded else {
             exit(errormessage: gitReviewRunOutput.stderror)
@@ -33,5 +30,23 @@ struct Git {
             exit(errormessage: gitSubmitRunOutput.stderror)
         }
         print(gitSubmitRunOutput.stdout)
+    }
+
+    static func gitAdd() {
+        let gitAddRunOutput = run(bash: "git add .")
+        guard gitAddRunOutput.succeeded else {
+            exit(errormessage: gitAddRunOutput.stderror)
+        }
+        print("git add completed")
+    }
+
+    static func gitCommit(_ message: String, isAmend: Bool) {
+        var command: String = "git commit\(isAmend ? " --amend" : "")"
+        command.append(" -m \(message) --quiet")
+        let gitCommitRunOutput = run(bash: command)
+        guard gitCommitRunOutput.succeeded else {
+            exit(errormessage: gitCommitRunOutput.stderror)
+        }
+        print("git commit completed")
     }
 }

@@ -1,21 +1,55 @@
 import SwiftShell
 import ArgumentParser
 
-/// USAGE: SubmitCode [--submit] [--id <id>]
+/// USAGE: submit-code <subcommand>
+/// SUBCOMMANDS:
+/// c                       Commit Code
+/// p (default)             Post Code
+/// s                       Submit Code
 struct SubmitCode: ParsableCommand {
-    @Flag(name: .shortAndLong, help: "Flag whether to submit code")
-    var submit = false
+    static var configuration = CommandConfiguration(
+        subcommands: [Commit.self, Post.self, Submit.self],
+        defaultSubcommand: Post.self)
+}
 
-    @Option(name: .shortAndLong, help: "Review Board ID")
-    var id: String?
+extension SubmitCode {
+    struct Commit: ParsableCommand {
+        static var configuration = CommandConfiguration(commandName: "c", abstract: "Commit Code")
 
-    func run() throws {
-        Git.gitPull()
-        if submit {
+        @Argument(help: "Commit message")
+        var message: String
+
+        @Flag(name: .shortAndLong, help: "Flag whether to amend code")
+        var amend: Bool = false
+
+        func run() throws {
+            Git.gitAdd()
+            Git.gitCommit(message, isAmend: amend)
+        }
+    }
+
+    struct Post: ParsableCommand {
+        static var configuration = CommandConfiguration(commandName: "p",abstract: "Post Code")
+
+        @Option(name: .shortAndLong, help: "Review Board ID")
+        var id: String?
+
+        func run() throws {
+            Git.gitPull()
+            Rbt.rbtPost(id)
+        }
+    }
+
+    struct Submit: ParsableCommand {
+        static var configuration = CommandConfiguration(commandName: "s", abstract: "Submit Code")
+
+        @Argument(help: "Review Board ID")
+        var id: String
+
+        func run() throws {
+            Git.gitPull()
             Git.gitReview(id)
             Git.gitSubmit()
-        } else {
-            Rbt.rbtPost(id)
         }
     }
 }
