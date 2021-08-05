@@ -9,8 +9,8 @@ import ArgumentParser
 
 struct SubmitCode: ParsableCommand {
     static var configuration = CommandConfiguration(
-        subcommands: [Cap.self, Commit.self, Post.self, Submit.self, Push.self],
-        defaultSubcommand: Cap.self)
+        subcommands: [Crp.self, Commit.self, Post.self, Submit.self, Push.self, Cgp.self],
+        defaultSubcommand: Crp.self)
 }
 
 struct Options: ParsableArguments {
@@ -22,13 +22,10 @@ struct Options: ParsableArguments {
 }
 
 extension SubmitCode {
-    struct Cap: ParsableCommand {
-        static var configuration = CommandConfiguration(commandName: "cp", abstract: "Commit and post/push code")
+    struct Crp: ParsableCommand {
+        static var configuration = CommandConfiguration(commandName: "crp", abstract: "Git commit and post code to review board")
 
         @OptionGroup var options: Options
-
-        @Flag(name: .shortAndLong, help: "Flag whether to use git push")
-        var push: Bool = false
 
         @Option(name: .shortAndLong, help: "Review board ID")
         var id: String?
@@ -37,11 +34,20 @@ extension SubmitCode {
             Git.gitAdd()
             Git.gitCommit(options.message, isAmend: options.amend)
             Git.gitPull()
-            if push {
-                Git.gitPush()
-            } else {
-                Rbt.rbtPost(id)
-            }
+            Rbt.rbtPost(id)
+        }
+    }
+
+    struct Cgp: ParsableCommand {
+        static var configuration = CommandConfiguration(commandName: "cgp", abstract: "Commit and push code")
+
+        @OptionGroup var options: Options
+
+        func run() throws {
+            Git.gitAdd()
+            Git.gitCommit(options.message, isAmend: options.amend)
+            Git.gitPull()
+            Git.gitPush()
         }
     }
 
