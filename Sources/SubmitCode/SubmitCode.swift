@@ -13,15 +13,19 @@ struct SubmitCode: ParsableCommand {
         defaultSubcommand: Cap.self)
 }
 
+struct Options: ParsableArguments {
+    @Argument(help: "Commit message")
+    var message: String
+
+    @Flag(name: .shortAndLong, help: "Flag whether to amend code")
+    var amend: Bool = false
+}
+
 extension SubmitCode {
     struct Cap: ParsableCommand {
-        static var configuration = CommandConfiguration(commandName: "cap", abstract: "Commit and post/push code")
+        static var configuration = CommandConfiguration(commandName: "cp", abstract: "Commit and post/push code")
 
-        @Argument(help: "Commit message")
-        var message: String
-
-        @Flag(name: .shortAndLong, help: "Flag whether to amend code")
-        var amend: Bool = false
+        @OptionGroup var options: Options
 
         @Flag(name: .shortAndLong, help: "Flag whether to use git push")
         var push: Bool = false
@@ -31,7 +35,7 @@ extension SubmitCode {
 
         func run() throws {
             Git.gitAdd()
-            Git.gitCommit(message, isAmend: amend)
+            Git.gitCommit(options.message, isAmend: options.amend)
             Git.gitPull()
             if push {
                 Git.gitPush()
@@ -42,22 +46,18 @@ extension SubmitCode {
     }
 
     struct Commit: ParsableCommand {
-        static var configuration = CommandConfiguration(commandName: "c", abstract: "Commit code")
+        static var configuration = CommandConfiguration(commandName: "gc", abstract: "Git commit code")
 
-        @Argument(help: "Commit message")
-        var message: String
-
-        @Flag(name: .shortAndLong, help: "Flag whether to amend code")
-        var amend: Bool = false
+        @OptionGroup var options: Options
 
         func run() throws {
             Git.gitAdd()
-            Git.gitCommit(message, isAmend: amend)
+            Git.gitCommit(options.message, isAmend: options.amend)
         }
     }
 
     struct Post: ParsableCommand {
-        static var configuration = CommandConfiguration(commandName: "p",abstract: "Post code")
+        static var configuration = CommandConfiguration(commandName: "rp",abstract: "Post code to review board")
 
         @Option(name: .shortAndLong, help: "Review Board ID")
         var id: String?
@@ -69,7 +69,7 @@ extension SubmitCode {
     }
 
     struct Submit: ParsableCommand {
-        static var configuration = CommandConfiguration(commandName: "s", abstract: "Submit code")
+        static var configuration = CommandConfiguration(commandName: "gs", abstract: "Git submit code")
 
         @Argument(help: "Review board ID")
         var id: String
@@ -82,7 +82,7 @@ extension SubmitCode {
     }
 
     struct Push: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Push code")
+        static var configuration = CommandConfiguration(commandName: "gp", abstract: "Git Push code")
 
         func run() throws {
             Git.gitPull()
