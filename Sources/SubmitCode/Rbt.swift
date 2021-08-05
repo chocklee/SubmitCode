@@ -11,7 +11,7 @@ struct Rbt {
     static func rbtPost(_ rbID: String? = nil) {
         if rbID != nil, let rbID = rbID {
             guard rbID.count > 1 && rbID.count <= 7 else {
-                exit(errormessage: "rb id is incorrect")
+                exit(errormessage: "rb ID is incorrect")
             }
             let rbtPostRunOutput = run(bash: "rbt post -r \(rbID)")
             guard rbtPostRunOutput.succeeded else {
