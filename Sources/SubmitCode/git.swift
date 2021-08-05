@@ -49,4 +49,12 @@ struct Git {
         }
         print("git commit completed")
     }
+
+    static func gitPush() {
+        let gitPushRunOutput = run(bash: "git push")
+        guard gitPushRunOutput.succeeded else {
+            exit(errormessage: gitPushRunOutput.stderror)
+        }
+        print(gitPushRunOutput.stdout)
+    }
 }

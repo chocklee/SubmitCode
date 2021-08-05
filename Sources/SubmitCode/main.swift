@@ -8,7 +8,7 @@ import ArgumentParser
 /// s                       Submit Code
 struct SubmitCode: ParsableCommand {
     static var configuration = CommandConfiguration(
-        subcommands: [Commit.self, Post.self, Submit.self],
+        subcommands: [Commit.self, Post.self, Submit.self, Push.self],
         defaultSubcommand: Post.self)
 }
 
@@ -50,6 +50,14 @@ extension SubmitCode {
             Git.gitPull()
             Git.gitReview(id)
             Git.gitSubmit()
+        }
+    }
+
+    struct Push: ParsableCommand {
+        static var configuration = CommandConfiguration(abstract: "Push Code")
+        func run() throws {
+            Git.gitPull()
+            Git.gitPush()
         }
     }
 }
