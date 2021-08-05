@@ -42,7 +42,7 @@ struct Git {
 
     static func gitCommit(_ message: String, isAmend: Bool) {
         var command: String = "git commit\(isAmend ? " --amend" : "")"
-        command.append(" -m \(message) --quiet")
+        command.append(" -m \"\(message)\" --quiet")
         let gitCommitRunOutput = run(bash: command)
         guard gitCommitRunOutput.succeeded else {
             exit(errormessage: gitCommitRunOutput.stderror)
