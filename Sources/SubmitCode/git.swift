@@ -56,5 +56,6 @@ struct Git {
             exit(errormessage: gitPushRunOutput.stderror)
         }
         print(gitPushRunOutput.stdout)
+        print("git push completed")
     }
 }
